@@ -54,7 +54,7 @@ But this is obviously awkward, and ES7 decorators are recommended :)
 
 Currently, `AsyncRegister` expects asynchronous actions to have a `promise` property attached to them.
 
-TODO: In the future, we may be able to make this configurable by adding a 'promise' check function that can be passed in to do the sniffing/collecting of promises.
+> TODO: In the future, we may be able to make this configurable by adding a 'promise' check function that can be passed in to do the sniffing/collecting of promises.
 
 ```js
 /* SomePageActions.js */
@@ -74,7 +74,7 @@ export function someAsyncAction(data) {
 
 Since `AsyncRegister` is not opinionated about how your server rendering works, it's left up to you to wire in the functionality.
 
-TODO: This may change as this project grows and if common patterns start to emerge it may be provided for you, but for now it's up to you. Below is an example of how your server-rending might make use of `AsyncRegister`:
+> TODO: This may change as this project grows and if common patterns start to emerge it may be provided for you, but for now it's up to you. Below is an example of how your server-rending might make use of `AsyncRegister`:
 
 ```js
 /* server.js */
