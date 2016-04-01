@@ -18,7 +18,7 @@
     "rendering",
     "ssr"
   ],
-  "author": "",
+  "author": "Jeremy Gayed (https://github.com/tizmagik)",
   "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/NYTimes/redux-taxi/issues"

@@ -1,13 +1,13 @@
 import {assert} from 'chai';
 import sinon from 'sinon';
-import {AsyncRegisterMiddleware} from '../index';
+import {ReduxTaxiMiddleware} from '../index';
 
-describe('AsyncRegisterMiddleware', () => {
-    const mockAsyncRegister = {
+describe('ReduxTaxiMiddleware', () => {
+    const mockReduxTaxi = {
         isRegistered() {},
         collectPromise() {}
     };
-    const nextHandler = AsyncRegisterMiddleware(mockAsyncRegister)();
+    const nextHandler = ReduxTaxiMiddleware(mockReduxTaxi)();
 
     const SYNC_TYPE = 'SYNC_TYPE';
     const ASYNC_TYPE = 'ASYNC_TYPE';
@@ -45,19 +45,19 @@ describe('AsyncRegisterMiddleware', () => {
             });
 
             it('must throw an error if the action is not registered', done => {
-                sinon.stub(mockAsyncRegister, 'isRegistered', () => false);
+                sinon.stub(mockReduxTaxi, 'isRegistered', () => false);
                 try {
                     nextHandler()(asyncAction);
                 } catch (err) {
                     assert.isTrue(err.message.indexOf(ASYNC_TYPE) > -1);
                     done();
                 }
-                mockAsyncRegister.isRegistered.restore();
+                mockReduxTaxi.isRegistered.restore();
             });
 
             it('must collect promises for registered actions', done => {
-                sinon.stub(mockAsyncRegister, 'isRegistered', () => true);
-                sinon.stub(mockAsyncRegister, 'collectPromise', (promise) => {
+                sinon.stub(mockReduxTaxi, 'isRegistered', () => true);
+                sinon.stub(mockReduxTaxi, 'collectPromise', (promise) => {
                     assert.strictEqual(testPromise, promise);
                     done();
                 });
@@ -68,8 +68,8 @@ describe('AsyncRegisterMiddleware', () => {
 
                 actionHandler(asyncAction);
 
-                mockAsyncRegister.isRegistered.restore();
-                mockAsyncRegister.collectPromise.restore();
+                mockReduxTaxi.isRegistered.restore();
+                mockReduxTaxi.collectPromise.restore();
             });
         }); // end describe('handle action')
     }); // end describe('handle next')

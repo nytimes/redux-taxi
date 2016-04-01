@@ -9,7 +9,7 @@ describe('registerAsyncActions', () => {
     const TEST_ACTION2 = 'TEST_ACTION2';
     const TEST_ACTION3 = 'TEST_ACTION3';
 
-    const mockAsyncRegister = {
+    const mockReduxTaxi = {
         register() {}
     };
 
@@ -19,18 +19,18 @@ describe('registerAsyncActions', () => {
         }
     }
 
-    class MockAsyncRegisterProvider extends Component {
+    class MockReduxTaxiProvider extends Component {
         static propTypes = {
             children: PropTypes.node.isRequired
         };
 
         static childContextTypes = {
-            asyncRegister: PropTypes.object
+            reduxTaxi: PropTypes.object
         };
 
         getChildContext() {
             return {
-                asyncRegister: mockAsyncRegister
+                reduxTaxi: mockReduxTaxi
             };
         }
 
@@ -40,11 +40,11 @@ describe('registerAsyncActions', () => {
     }
 
     beforeEach(() => {
-        sinon.spy(mockAsyncRegister, 'register');
+        sinon.spy(mockReduxTaxi, 'register');
     });
 
     afterEach(() => {
-        mockAsyncRegister.register.restore();
+        mockReduxTaxi.register.restore();
     });
 
     it('should register a single action passed in', () => {
@@ -52,13 +52,13 @@ describe('registerAsyncActions', () => {
         class TestComponent extends StaticComponent {}
 
         TestUtils.renderIntoDocument(
-            <MockAsyncRegisterProvider>
+            <MockReduxTaxiProvider>
                 <TestComponent />
-            </MockAsyncRegisterProvider>
+            </MockReduxTaxiProvider>
         );
 
-        assert.isTrue(mockAsyncRegister.register.calledOnce);
-        assert(mockAsyncRegister.register.calledWith(TEST_ACTION1));
+        assert.isTrue(mockReduxTaxi.register.calledOnce);
+        assert(mockReduxTaxi.register.calledWith(TEST_ACTION1));
     });
 
     it('should register a list of actions passed in', () => {
@@ -66,24 +66,24 @@ describe('registerAsyncActions', () => {
         class TestComponent extends StaticComponent {}
 
         TestUtils.renderIntoDocument(
-            <MockAsyncRegisterProvider>
+            <MockReduxTaxiProvider>
                 <TestComponent />
-            </MockAsyncRegisterProvider>
+            </MockReduxTaxiProvider>
         );
 
-        assert.isTrue(mockAsyncRegister.register.calledThrice);
+        assert.isTrue(mockReduxTaxi.register.calledThrice);
 
-        assert.strictEqual(mockAsyncRegister.register.getCall(0).args[0], TEST_ACTION1);
-        assert.strictEqual(mockAsyncRegister.register.getCall(1).args[0], TEST_ACTION2);
-        assert.strictEqual(mockAsyncRegister.register.getCall(2).args[0], TEST_ACTION3);
+        assert.strictEqual(mockReduxTaxi.register.getCall(0).args[0], TEST_ACTION1);
+        assert.strictEqual(mockReduxTaxi.register.getCall(1).args[0], TEST_ACTION2);
+        assert.strictEqual(mockReduxTaxi.register.getCall(2).args[0], TEST_ACTION3);
     });
 
-    it('should not register actions when asyncRegister context is not available', () => {
+    it('should not register actions when reduxTaxi context is not available', () => {
         @registerAsyncActions(TEST_ACTION1, TEST_ACTION2, TEST_ACTION3)
         class TestComponent extends StaticComponent {}
 
         TestUtils.renderIntoDocument(<TestComponent />);
 
-        assert.strictEqual(mockAsyncRegister.register.callCount, 0);
+        assert.strictEqual(mockReduxTaxi.register.callCount, 0);
     });
 });

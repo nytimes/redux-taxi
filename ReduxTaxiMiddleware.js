@@ -1,5 +1,5 @@
 /**
-* AsyncRegisterMiddleware
+* ReduxTaxiMiddleware
 *
 * This middleware will Register asynchronous actions (actions with a 'promise')
 * and throw an error when unregistered ones are dispatched.
@@ -11,11 +11,11 @@
 *
 * Also note, this middleware is only needed on the server.
 *
-* @param {object} asyncRegister - an instance of ../AsyncRegister
+* @param {object} reduxTaxi - an instance of ../ReduxTaxi
 * @returns {function} Redux-compliant middleware
 *
 **/
-export default function AsyncRegisterMiddleware(asyncRegister) {
+export default function ReduxTaxiMiddleware(reduxTaxi) {
     return () => next => action => {
         const {promise, type} = action;
 
@@ -23,8 +23,8 @@ export default function AsyncRegisterMiddleware(asyncRegister) {
             return next(action);
         }
 
-        if (asyncRegister.isRegistered(type)) {
-            asyncRegister.collectPromise(promise);
+        if (reduxTaxi.isRegistered(type)) {
+            reduxTaxi.collectPromise(promise);
         } else {
             throw new Error(
 `The async action ${type} was dispatched in a server context without being explicitly registered.

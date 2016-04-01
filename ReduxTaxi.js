@@ -1,11 +1,11 @@
 /**
-* AsyncRegister
+* ReduxTaxi
 *
-* Returns the AsyncRegister instance to be instantiated server-side and passed to the middleware.
+* Returns the ReduxTaxi instance to be instantiated server-side and passed to the middleware.
 *
 **/
 
-export default function AsyncRegister() {
+export default function ReduxTaxi() {
     const registeredActions = new Set();
     const promises = [];
 

@@ -13,14 +13,14 @@ export default function registerAsyncActions(...actionTypes) {
     return DecoratedComponent =>
     class AsyncDecorator extends React.Component {
         static contextTypes = {
-            asyncRegister: React.PropTypes.object // not required because we don't define it for client context
+            reduxTaxi: React.PropTypes.object // not required because we don't define it for client context
         };
 
         constructor(props, context) {
             super(props, context);
-            if (context.asyncRegister) {
+            if (context.reduxTaxi) {
                 actionTypes.forEach(actionType => {
-                    context.asyncRegister.register(actionType);
+                    context.reduxTaxi.register(actionType);
                 });
             }
         }

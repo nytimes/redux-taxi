@@ -1,12 +1,12 @@
 import {assert} from 'chai';
 import React, {Component, PropTypes} from 'react';
 import TestUtils from 'react-addons-test-utils';
-import {AsyncRegisterProvider} from '../index';
+import {ReduxTaxiProvider} from '../index';
 
-describe('AsyncRegisterProvider', () => {
+describe('ReduxTaxiProvider', () => {
     class Child extends Component {
         static contextTypes = {
-            asyncRegister: PropTypes.object.isRequired
+            reduxTaxi: PropTypes.object.isRequired
         };
 
         render() {
@@ -15,42 +15,42 @@ describe('AsyncRegisterProvider', () => {
     }
 
     // Ignore propTypes warnings
-    const propTypes = AsyncRegisterProvider.propTypes;
-    AsyncRegisterProvider.propTypes = {};
+    const propTypes = ReduxTaxiProvider.propTypes;
+    ReduxTaxiProvider.propTypes = {};
 
     it('should enforce a single child', () => {
         try {
             assert.doesNotThrow(() => TestUtils.renderIntoDocument(
-                <AsyncRegisterProvider asyncRegister={{}}>
+                <ReduxTaxiProvider reduxTaxi={{}}>
                     <div />
-                </AsyncRegisterProvider>
+                </ReduxTaxiProvider>
             ));
 
             assert.throws(() => TestUtils.renderIntoDocument(
-                <AsyncRegisterProvider asyncRegister={{}} />
+                <ReduxTaxiProvider reduxTaxi={{}} />
             ), /exactly one child/);
 
             assert.throws(() => TestUtils.renderIntoDocument(
-                <AsyncRegisterProvider asyncRegister={{}}>
+                <ReduxTaxiProvider reduxTaxi={{}}>
                     <div />
                     <div />
-                </AsyncRegisterProvider>
+                </ReduxTaxiProvider>
             ), /exactly one child/);
         } finally {
-            AsyncRegisterProvider.propTypes = propTypes;
+            ReduxTaxiProvider.propTypes = propTypes;
         }
     });
 
-    it('should add the asyncRegister to the child context', () => {
-        const asyncRegister = {};
+    it('should add the reduxTaxi to the child context', () => {
+        const reduxTaxi = {};
 
         const tree = TestUtils.renderIntoDocument(
-            <AsyncRegisterProvider asyncRegister={asyncRegister}>
+            <ReduxTaxiProvider reduxTaxi={reduxTaxi}>
                 <Child />
-            </AsyncRegisterProvider>
+            </ReduxTaxiProvider>
         );
 
         const child = TestUtils.findRenderedComponentWithType(tree, Child);
-        assert.strictEqual(child.context.asyncRegister, asyncRegister);
+        assert.strictEqual(child.context.reduxTaxi, reduxTaxi);
     });
 });

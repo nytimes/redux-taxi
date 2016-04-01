@@ -1,8 +1,6 @@
 # redux-taxi :taxi:
 
-> NOTE: We're in the process of refactoring to reflect the new name, `redux-taxi` from the internally used name, `AsyncRegister`.
-
-The AsyncRegister provides a mechanism to signal to the server when it should wait for asynchronous actions to complete before processing and sending the initial markup to the client.
+ReduxTaxi provides a mechanism to signal to the server when it should wait for asynchronous actions to complete before processing and sending the initial markup to the client.
 
 ## Use case
 
@@ -13,25 +11,20 @@ When you have asynchronous actions that you want to be processed on the server (
 ###### Decorator
 ```js
 /* SomePage.jsx */
-
-// ...
+import SomePageActions from 'action/SomePageActions';
 import {SOME_ASYNC_ACTION} from 'action/types';
-import {registerAsyncActions} from '../AsyncRegister';
+import {registerAsyncActions} from 'redux-taxi';
 
+// explicitly register the async action
 @registerAsyncActions(SOME_ASYNC_ACTION)
-@connect( // ... usual store connection decorator
-    state => state.somePageState,
-    SomePageActions
-)
+// usual redux store connection decorator
+@connect(state => state.somePageState, SomePageActions)
 export default class SomePage extends Component {
-
     constructor(props, context) {
         super(props, context);
-
         // Dispatch async action
         this.props.someAsyncAction(this.props.data);
     }
-
     // ... render() and other methods
 }
 ```
@@ -52,7 +45,7 @@ But this is obviously awkward, and ES7 decorators are recommended :)
 
 ###### Asynchronous Action Format
 
-Currently, `AsyncRegister` expects asynchronous actions to have a `promise` property attached to them.
+Currently, `ReduxTaxi` expects asynchronous actions to have a `promise` property attached to them. The `PromiseMiddleware` is provided for convenience, but you're free to use your own. `ReduxTaxi` detects promises by looking for `action.promise`.
 
 > TODO: In the future, we may be able to make this configurable by adding a 'promise' check function that can be passed in to do the sniffing/collecting of promises.
 
@@ -65,16 +58,16 @@ import api from 'api';
 export function someAsyncAction(data) {
     return {
         type: SOME_ASYNC_ACTION,
-        promise: api.someAsyncRequest(data) // Promise collected by AsyncRegister
+        promise: api.someAsyncRequest(data) // Promise collected by ReduxTaxi
     };
 }
 ```
 
 ### Server Setup
 
-Since `AsyncRegister` is not opinionated about how your server rendering works, it's left up to you to wire in the functionality.
+Since `ReduxTaxi` is not opinionated about how your server rendering works, it's left up to you to wire in the functionality.
 
-> TODO: This may change as this project grows and if common patterns start to emerge it may be provided for you, but for now it's up to you. Below is an example of how your server-rending might make use of `AsyncRegister`:
+> TODO: This may change as this project grows and if common patterns start to emerge it may be provided for you, but for now it's up to you. Below is an example of how your server-rending might make use of `ReduxTaxi`:
 
 ```js
 /* server.js */
@@ -82,11 +75,12 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import express from 'express';
 
-// redux imports
-import {Provider} from 'react-redux';
-
 // react-router imports
 import {match, RouterContext} from 'react-router';
+
+// redux imports
+import {Provider} from 'react-redux';
+import {ReduxTaxi, ReduxTaxiProvider} from 'redux-taxi';
 
 // app imports
 import configureStore from './store/configureStore'; // Your store configurator
@@ -97,19 +91,19 @@ server.use((req, res) => {
         // ... some error handling ...
 
         if (renderProps) {
-            const asyncRegister = AsyncRegister();
+            const reduxTaxi = ReduxTaxi();
 
-            // Your configureStore signature may be different, but here we are passing asyncRegister as part of an object with a property name of `asyncRegister`
-            // to signal to configureStore to include it when configuring the store for the server (as opposed to the client where asyncRegister is not needed,
+            // Your configureStore signature may be different, but here we are passing reduxTaxi as part of an object with a property name of `reduxTaxi`
+            // to signal to configureStore to include it when configuring the store for the server (as opposed to the client where reduxTaxi is not needed,
             // and something else may be provided, e.g. browserHistory). This allows us to write configureStore in an "isomorphic" fashion, without having
             // to explicitly signal that its running in server or client contexts.
-            const store = configureStore(initialState, {asyncRegister});
+            const store = configureStore(initialState, {reduxTaxi});
 
             const initialComponent = (
                 <Provider store={store}>
-                    <AsyncRegisterProvider asyncRegister={asyncRegister}>
+                    <ReduxTaxiProvider reduxTaxi={reduxTaxi}>
                         <RouterContext {...renderProps} />
-                    </AsyncRegisterProvider>
+                    </ReduxTaxiProvider>
                 </Provider>
             );
 
@@ -117,7 +111,7 @@ server.use((req, res) => {
             // and collect any promises that may be registered.
             let content = ReactDOMServer.renderToString(initialComponent);
 
-            const allPromises = asyncRegister.getAllPromises();
+            const allPromises = reduxTaxi.getAllPromises();
             if (allPromises.length) {
                 // If we have some promises, we need to delay server rendering
                 Promise
@@ -140,23 +134,23 @@ server.use((req, res) => {
 
 ### configureStore
 
-Your configure store just needs to apply the `AsyncRegisterMiddleware` with the `AsyncRegister` instance passed in from server.js. Here's a real-world example:
+Your configure store just needs to apply the `ReduxTaxiMiddleware` with the `ReduxTaxi` instance passed in from server.js. Here's a real-world example:
 
 ```js
 import {createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import {syncHistory} from 'react-router-redux';
-import {AsyncRegisterMiddleware, PromiseMiddleware} from 'AsyncRegister';
+import {ReduxTaxiMiddleware, PromiseMiddleware} from 'redux-taxi';
 import rootReducer from './reducers'; // Your app reducers
 
 export default function configureStore(initialState, instance) {
     const middleware = applyMiddleware(
-        // In a server context, asyncRegister will be provided,
+        // In a server context, reduxTaxi will be provided,
         // in a client context, history will be provided.
         // This keeps configureStore "isomorphic" in the sense that it's basically unaware of what context it's being rendered in.
-        instance.asyncRegister ? AsyncRegisterMiddleware(instance.asyncRegister) : syncHistory(instance.history),
+        instance.reduxTaxi ? ReduxTaxiMiddleware(instance.reduxTaxi) : syncHistory(instance.history),
 
-        // You do not have to use `AsyncRegister`'s PromiseMiddleware, but it's provided for convenience
+        // You do not have to use `ReduxTaxi`'s PromiseMiddleware, but it's provided for convenience
         // TODO: Should we actually provide this?
         PromiseMiddleware,
 
@@ -185,7 +179,7 @@ Simply put your action dispatching in `componentDidMount()` lifecycle method, si
    (Modified to only dispatch async action on client)
 */
 
-// (Notice no need to import action type and ../AsyncRegister)
+// (Notice no need to import action type and redux-taxi)
 
 @connect( // ... usual store connection decorator
     state => state.somePageState,
@@ -205,6 +199,6 @@ export default class SomePage extends Component {
 
 ## How does it work?
 
-All the code can be inspected in `../AsyncRegister/*`, but in a nutshell, there's special middleware (`AsyncRegisterMiddleware.js` along with `PromiseMiddleware.js`) that intercepts all actions that have a `promise` defined and checks to see if they're registered with `AsyncRegister.js` (which is provided at the request-level via `AsyncRegisterProvider.js`). Then, when rendering on the server, any promises that have been collected will be `.all().then()`'d and then the server re-renders the markup and finally responds to the client.
+In a nutshell, there's special middleware (`ReduxTaxiMiddleware.js` along with `PromiseMiddleware.js`) that intercepts all actions that have a `promise` defined and checks to see if they're registered with `ReduxTaxi.js` (which is provided at the request-level via `ReduxTaxiProvider.js`). Then, when rendering on the server, any promises that have been collected will be `.all().then()`'d and then the server re-renders the markup and finally responds to the client.
 
 >NOTE: This re-rendering (rendering twice) is necessary because React does not currently provide a way to instantiate React Components without actually rendering them to something (e.g. the `constructor` does not get called). To mitigate any (albeit marginal) time cost to this, the re-rendering should _only_ be done when there are actually asynchronous actions that fired. A completely synchronous page should render immediately.

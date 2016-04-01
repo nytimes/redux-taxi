@@ -1,18 +1,18 @@
 import React, {Component, PropTypes, Children} from 'react';
 
-export default class AsyncRegisterProvider extends Component {
+export default class ReduxTaxiProvider extends Component {
     static propTypes = {
         children: PropTypes.node.isRequired,
-        asyncRegister: PropTypes.object.isRequired
+        reduxTaxi: PropTypes.object.isRequired
     };
 
     static childContextTypes = {
-        asyncRegister: PropTypes.object.isRequired
+        reduxTaxi: PropTypes.object.isRequired
     };
 
     getChildContext() {
         return {
-            asyncRegister: this.props.asyncRegister
+            reduxTaxi: this.props.reduxTaxi
         };
     }
 
