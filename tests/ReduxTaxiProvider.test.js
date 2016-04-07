@@ -1,7 +1,7 @@
 import {assert} from 'chai';
 import React, {Component, PropTypes} from 'react';
 import TestUtils from 'react-addons-test-utils';
-import {ReduxTaxiProvider} from '../index';
+import {ReduxTaxiProvider} from '../src/index';
 
 describe('ReduxTaxiProvider', () => {
     class Child extends Component {

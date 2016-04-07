@@ -1,5 +1,5 @@
 import {assert} from 'chai';
-import {ReduxTaxi} from '../index';
+import {ReduxTaxi} from '../src/index';
 
 describe('ReduxTaxi', () => {
     const actionType1 = 'test1';

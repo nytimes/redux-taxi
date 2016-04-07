@@ -1,6 +1,6 @@
 import {assert} from 'chai';
 import sinon from 'sinon';
-import {ReduxTaxiMiddleware} from '../index';
+import {ReduxTaxiMiddleware} from '../src/index';
 
 describe('ReduxTaxiMiddleware', () => {
     const mockReduxTaxi = {

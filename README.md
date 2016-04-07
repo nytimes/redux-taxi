@@ -151,7 +151,6 @@ export default function configureStore(initialState, instance) {
         instance.reduxTaxi ? ReduxTaxiMiddleware(instance.reduxTaxi) : syncHistory(instance.history),
 
         // You do not have to use `ReduxTaxi`'s PromiseMiddleware, but it's provided for convenience
-        // TODO: Should we actually provide this?
         PromiseMiddleware,
 
         // Your other middleware...

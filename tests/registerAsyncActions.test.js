@@ -2,7 +2,7 @@ import {assert} from 'chai';
 import sinon from 'sinon';
 import React, {Component, PropTypes} from 'react';
 import TestUtils from 'react-addons-test-utils';
-import {registerAsyncActions} from '../index';
+import {registerAsyncActions} from '../src/index';
 
 describe('registerAsyncActions', () => {
     const TEST_ACTION1 = 'TEST_ACTION1';
