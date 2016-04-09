@@ -18,9 +18,15 @@
     "taxi",
     "server rendering",
     "ssr",
+    "isomorphic",
+    "universal",
     "nytimes"
   ],
   "author": "Jeremy Gayed (https://github.com/tizmagik)",
+  "contributors": [
+      "Ivan Kravchenko (https://github.com/ivankravchenko)",
+      "Devorah Moskowitz (https://github.com/devorah)",
+  ],
   "license": "Apache 2.0",
   "bugs": {
     "url": "https://github.com/NYTimes/redux-taxi/issues"

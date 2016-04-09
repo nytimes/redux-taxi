@@ -6,7 +6,15 @@ ReduxTaxi provides a mechanism to signal to the server when it should wait for a
 
 When you have asynchronous actions that you want to be processed on the server (at instantiation time, e.g. in the `constructor`) before responding to the client, you'll need to explicitly register them to avoid an `Error` being thrown. The motivation behind this throw is explained later in this document.
 
+## Installation
+
+```
+npm install --save redux-taxi
+```
+
 ## Usage
+
+Use the decorator to signal at the component level when the component relies on an asynchronous action server-side.
 
 ###### Decorator
 ```js
@@ -163,7 +171,7 @@ export default function configureStore(initialState, instance) {
 
 ## Motivation
 
-Because `ReactDOMServer.renderToString()` is synchronous, we need a way to signal to the server that it should wait for any asynchronous actions to complete before responding to the client. Without this, asynchronous actions will be fired and forgotten.
+Because `ReactDOMServer.renderToString()` is synchronous, we need a way to signal to the server that it should wait for any asynchronous actions to complete before responding to the client. Without this, asynchronous actions will be fired and forgotten on the server, and repeated on the client.
 
 #### But why the `@registerAsyncActions()` decorator?
 
