@@ -1,17 +1,14 @@
 {
   "name": "redux-taxi",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Inform server-side rendering from the component level when dealing with asynchronous actions.",
-  "main": "index.js",
+  "main": "lib/index",
   "scripts": {
     "compile": "rm -rf ./lib && babel -d lib/ src/",
     "prepublish": "npm run test && npm run compile",
     "test": "mocha tests/*.test.js --compilers js:babel-core/register --require tests/mocha.setup.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://tizmagik@github.com/NYTimes/redux-taxi.git"
-  },
+  "repository": "NYTimes/redux-taxi",
   "keywords": [
     "redux",
     "react",
