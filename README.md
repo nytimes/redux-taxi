@@ -1,6 +1,6 @@
 # redux-taxi :taxi:
 
-ReduxTaxi provides a mechanism to signal to the server when it should wait for asynchronous actions to complete before processing and sending the initial markup to the client.
+ReduxTaxi allows for component-driven asynchronous server-side rendering in isomorphic/universal React+Redux apps.
 
 ## Use case
 
