@@ -209,3 +209,11 @@ export default class SomePage extends Component {
 In a nutshell, there's special middleware (`ReduxTaxiMiddleware.js` along with `PromiseMiddleware.js`) that intercepts all actions that have a `promise` defined and checks to see if they're registered with `ReduxTaxi.js` (which is provided at the request-level via `ReduxTaxiProvider.js`). Then, when rendering on the server, any promises that have been collected will be `.all().then()`'d and then the server re-renders the markup and finally responds to the client.
 
 >NOTE: This re-rendering (rendering twice) is necessary because React does not currently provide a way to instantiate React Components without actually rendering them to something (e.g. the `constructor` does not get called). To mitigate any (albeit marginal) time cost to this, the re-rendering should _only_ be done when there are actually asynchronous actions that fired. A completely synchronous page should render immediately.
+
+## Alternative Projects
+
+- [async-props](https://github.com/ryanflorence/async-props) - Data-fetching knowledge lives at the Routing level.
+- [redial](https://github.com/markdalgleish/redial) - Data-fetching knowledge lives at the Routing level.
+- [ground-control](https://github.com/raisemarketplace/ground-control) - Data-fetching knowledge lives at the Routing level.
+- [react-transmit](https://github.com/RickWong/react-transmit) - Provides a Relay-inspired API, but with Promises instead of GraphQL queries.
+- [react-resolver](https://github.com/ericclemmons/react-resolver) - Similar philosophy to `redux-taxi` (knowledge is confined at the component level), but is mostly usable outside of a Redux architecture.
