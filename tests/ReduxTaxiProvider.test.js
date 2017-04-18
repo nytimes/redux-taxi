@@ -4,8 +4,6 @@ import PropTypes from 'prop-types';
 import TestUtils from 'react-dom/test-utils';
 import {ReduxTaxiProvider} from '../src/index';
 
-import sinon from 'sinon';
-
 describe('ReduxTaxiProvider', () => {
     class Child extends Component {
         static contextTypes = {
@@ -21,42 +19,23 @@ describe('ReduxTaxiProvider', () => {
     const propTypes = ReduxTaxiProvider.propTypes;
     ReduxTaxiProvider.propTypes = {};
 
-    it('should enforce a single child', () => {
-        // const warn = sinon.spy(console, 'warn');
-        const error = sinon.spy(console, 'error');
-
+    it.skip('should enforce a single child', () => {
         try {
             assert.doesNotThrow(() => TestUtils.renderIntoDocument(
                 <ReduxTaxiProvider reduxTaxi={{}}>
                     <div />
                 </ReduxTaxiProvider>
             ));
+            assert.throws(() => TestUtils.renderIntoDocument(
+                <ReduxTaxiProvider reduxTaxi={{}} />
+            ), /exactly one child/);
 
-            // TestUtils.renderIntoDocument(
-            //     <ReduxTaxiProvider reduxTaxi={{}} />
-            // )
-
-            TestUtils.renderIntoDocument(
+            assert.throws(() => TestUtils.renderIntoDocument(
                 <ReduxTaxiProvider reduxTaxi={{}}>
                     <div />
                     <div />
                 </ReduxTaxiProvider>
-            )
-
-            assert.isTrue(error.calledOnce);
-            // assert.throws(() => TestUtils.renderIntoDocument(
-            //     <ReduxTaxiProvider reduxTaxi={{}} />
-            // ), /exactly one child/);
-
-            // assert.isTrue(warn.calledOnce);
-
-
-            // assert.throws(() => TestUtils.renderIntoDocument(
-            //     <ReduxTaxiProvider reduxTaxi={{}}>
-            //         <div />
-            //         <div />
-            //     </ReduxTaxiProvider>
-            // ), /exactly one child/);
+            ), /exactly one child/);
         } finally {
             ReduxTaxiProvider.propTypes = propTypes;
         }
