@@ -21,8 +21,8 @@
   ],
   "author": "Jeremy Gayed (https://github.com/tizmagik)",
   "contributors": [
-      "Ivan Kravchenko (https://github.com/ivankravchenko)",
-      "Devorah Moskowitz (https://github.com/devorah)"
+    "Ivan Kravchenko (https://github.com/ivankravchenko)",
+    "Devorah Moskowitz (https://github.com/devorah)"
   ],
   "license": "Apache 2.0",
   "bugs": {
@@ -42,9 +42,9 @@
     "chai": "^3.5.0",
     "jsdom": "^8.3.0",
     "mocha": "^2.4.5",
-    "react": "^0.14.8",
-    "react-addons-test-utils": "^0.14.8",
-    "react-dom": "^0.14.8",
+    "prop-types": "^15.5.8",
+    "react": "^15.5.4",
+    "react-dom": "^15.5.4",
     "sinon": "^1.17.3"
   }
 }
