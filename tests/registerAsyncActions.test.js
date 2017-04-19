@@ -1,7 +1,8 @@
 import {assert} from 'chai';
 import sinon from 'sinon';
-import React, {Component, PropTypes} from 'react';
-import TestUtils from 'react-addons-test-utils';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
+import TestUtils from 'react-dom/test-utils';
 import {registerAsyncActions} from '../src/index';
 
 describe('registerAsyncActions', () => {

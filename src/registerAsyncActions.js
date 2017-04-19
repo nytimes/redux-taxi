@@ -8,12 +8,13 @@
 *
 **/
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export default function registerAsyncActions(...actionTypes) {
     return DecoratedComponent =>
     class AsyncDecorator extends React.Component {
         static contextTypes = {
-            reduxTaxi: React.PropTypes.object // not required because we don't define it for client context
+            reduxTaxi: PropTypes.object // not required because we don't define it for client context
         };
 
         constructor(props, context) {
