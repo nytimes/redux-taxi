@@ -1,3 +1,5 @@
+# Changelog moved to [releases page](https://github.com/NYTimes/redux-taxi/releases)
+
 ## 1.0.1
 
 - Fixed package.json main target.
