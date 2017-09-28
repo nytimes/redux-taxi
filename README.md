@@ -1,4 +1,4 @@
-# redux-taxi :taxi:
+# redux-taxi :taxi: [![npm version](https://badge.fury.io/js/redux-taxi.svg)](https://badge.fury.io/js/redux-taxi)
 
 ReduxTaxi allows for component-driven asynchronous server-side rendering in isomorphic/universal React+Redux apps.
 
