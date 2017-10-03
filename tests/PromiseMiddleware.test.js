@@ -1,39 +1,32 @@
-import {assert} from 'chai';
+import { spy } from 'sinon';
 import PromiseMiddleware, {START, DONE} from '../src/PromiseMiddleware';
-
-function assertPromiseRejects(promise, assertAgainst) {
-    const matcher = typeof assertAgainst === 'function' ? assertAgainst : value => value === assertAgainst;
-    return promise.then(
-        () => assert(false, 'asserted promise expected to be rejected, but was resolved'),
-        reason => matcher(reason)
-    );
-}
 
 describe('PromiseMiddleware', () => {
     const nextHandler = PromiseMiddleware();
 
     it('must return a function to handle next', () => {
-        assert.isFunction(nextHandler);
-        assert.strictEqual(nextHandler.length, 1);
+        expect(nextHandler).toBeInstanceOf(Function);
+        expect(nextHandler).toHaveLength(1);
     });
 
     describe('handle next', () => {
         it('must return a function to handle action', () => {
             const actionHandler = nextHandler();
 
-            assert.isFunction(actionHandler);
-            assert.strictEqual(actionHandler.length, 1);
+            expect(actionHandler).toBeInstanceOf(Function);
+            expect(actionHandler).toHaveLength(1);
         });
 
         describe('handle action', () => {
-            it('must pass actions without promises to the next handler', done => {
+            it('must pass actions without promises to the next handler', () => {
                 const actionObj = {};
-                const actionHandler = nextHandler(action => {
-                    assert.strictEqual(action, actionObj);
-                    done();
-                });
+                const actionSpy = spy();
+                const actionHandler = nextHandler(actionSpy);
 
                 actionHandler(actionObj);
+
+                expect(actionSpy.calledOnce).toBeTruthy();
+                expect(actionSpy.firstCall.args[0]).toEqual(actionObj);
             });
 
             describe('handle promise action', () => {
@@ -49,67 +42,82 @@ describe('PromiseMiddleware', () => {
                 };
 
                 it('must produce a START sequenced action', () => {
-                    const actionHandler = nextHandler(action => {
-                        assert.isDefined(action.sequence);
-                        assert.strictEqual(action.type, promiseAction.type);
-                        assert.strictEqual(action.sequence.type, START);
-                    });
+                    const actionSpy = spy();
+                    const actionHandler = nextHandler(actionSpy);
 
                     actionHandler(promiseAction);
+
+                    const { sequence, type } = actionSpy.firstCall.args[0];
+
+                    expect(actionSpy.calledOnce).toBeTruthy();
+                    expect(sequence).toBeDefined();
+                    expect(type).toEqual(promiseAction.type);
+                    expect(sequence.type).toEqual(START);
                 });
 
                 it('must produce a DONE sequenced action when the promise resolves', () => {
-                    let id;
-                    const actionHandler = nextHandler(action => {
-                        assert.isDefined(action.sequence);
-                        assert.isDefined(action.sequence.type);
-                        assert.strictEqual(action.type, promiseAction.type);
+                    const actionSpy = spy();
+                    const actionHandler = nextHandler(actionSpy);
 
-                        if (id) {
-                            assert.strictEqual(action.sequence.id, id);
-                            assert.strictEqual(action.sequence.type, DONE);
-                        } else {
-                            id = action.sequence.id; // store generated id for checking later
-                            assert.strictEqual(action.sequence.type, START);
-                        }
-                    });
+                    const promiseResult = actionHandler(promiseAction);
 
-                    actionHandler(promiseAction);
+                    const firstCallArgs = actionSpy.firstCall.args[0];
+                    const { sequence: { id: expectedId } } = firstCallArgs;
+
+                    expect(actionSpy.calledOnce).toBeTruthy();
+                    expect(firstCallArgs).toHaveProperty('type', promiseAction.type);
+                    expect(firstCallArgs).toHaveProperty('sequence');
+                    expect(firstCallArgs.sequence).toHaveProperty('type', START);
+
                     promiseResolver.resolve();
+
+                    return promiseResult.then(() => {
+                        const secondCallArgs = actionSpy.secondCall.args[0];
+
+                        expect(actionSpy.calledTwice).toBeTruthy();
+                        expect(secondCallArgs.sequence).toHaveProperty('id', expectedId);
+                        expect(secondCallArgs.sequence).toHaveProperty('type', DONE);
+                    });
                 });
 
                 it('must produce an ERROR action when the promise rejects', () => {
-                    let id;
-                    const actionHandler = nextHandler(action => {
-                        assert.isDefined(action.sequence);
-                        assert.isDefined(action.sequence.type);
-                        assert.strictEqual(action.type, promiseAction.type);
+                    const actionSpy = spy();
+                    const actionHandler = nextHandler(actionSpy);
 
-                        if (id) {
-                            assert.strictEqual(action.sequence.id, id);
-                            assert.isTrue(action.error);
-                        } else {
-                            id = action.sequence.id; // store generated id for checking later
-                            assert.strictEqual(action.sequence.type, START);
-                        }
-                    });
+                    const promiseResult = actionHandler(promiseAction);
 
-                    actionHandler(promiseAction);
+                    const firstCallArgs = actionSpy.firstCall.args[0];
+                    const { sequence: { id: expectedId } } = firstCallArgs;
+
+                    expect(actionSpy.calledOnce).toBeTruthy();
+                    expect(firstCallArgs).toHaveProperty('type', promiseAction.type);
+                    expect(firstCallArgs).toHaveProperty('sequence');
+                    expect(firstCallArgs.sequence).toHaveProperty('type', START);
+
                     promiseResolver.reject();
+
+                    return promiseResult.catch(() => {
+                        const secondCallArgs = actionSpy.secondCall.args[0];
+
+                        expect(actionSpy.calledTwice).toBeTruthy();
+                        expect(secondCallArgs.sequence).toHaveProperty('id', expectedId);
+                        expect(secondCallArgs.error).toBeTruthy();
+                    });
                 });
 
                 it('must return a rejected promise when the action\'s promise rejects', () => {
-                    const originalError = 'reason';
+                    const originalError = 'reason of failure';
                     const promiseActionToReject = {
                         type: 'test',
                         promise: Promise.reject(originalError)
                     };
+                    const actionHandler = nextHandler(() => null);
 
-                    const actionHandler = nextHandler(() => {});
-                    const promise = actionHandler(promiseActionToReject);
-                    return assertPromiseRejects(promise, error => {
-                        assert.equal(error, originalError);
-                    });
+                    return actionHandler(promiseActionToReject)
+                        .then(() => fail('expected promise to be rejected, but was resolved'))
+                        .catch(error => {
+                            expect(error).toEqual(originalError);
+                        });
                 });
             }); // end describe('handle promise action')
         }); // end describe('handle action')
