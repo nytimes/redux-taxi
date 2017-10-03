@@ -43,7 +43,6 @@
     "babel-register": "^6.7.2",
     "chai": "^3.5.0",
     "jest": "^21.2.1",
-    "jsdom": "^8.3.0",
     "prop-types": "^15.5.8",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
