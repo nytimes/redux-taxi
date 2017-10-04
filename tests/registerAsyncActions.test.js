@@ -1,5 +1,4 @@
-import {assert} from 'chai';
-import sinon from 'sinon';
+import sinon, { spy } from 'sinon';
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import TestUtils from 'react-dom/test-utils';
@@ -41,7 +40,7 @@ describe('registerAsyncActions', () => {
     }
 
     beforeEach(() => {
-        sinon.spy(mockReduxTaxi, 'register');
+        spy(mockReduxTaxi, 'register');
     });
 
     afterEach(() => {
@@ -58,8 +57,8 @@ describe('registerAsyncActions', () => {
             </MockReduxTaxiProvider>
         );
 
-        assert.isTrue(mockReduxTaxi.register.calledOnce);
-        assert(mockReduxTaxi.register.calledWith(TEST_ACTION1));
+        expect(mockReduxTaxi.register.calledOnce).toBeTruthy();
+        expect(mockReduxTaxi.register.calledWith(TEST_ACTION1)).toBeTruthy();
     });
 
     it('should register a list of actions passed in', () => {
@@ -72,11 +71,12 @@ describe('registerAsyncActions', () => {
             </MockReduxTaxiProvider>
         );
 
-        assert.isTrue(mockReduxTaxi.register.calledThrice);
+        const { register } = mockReduxTaxi;
 
-        assert.strictEqual(mockReduxTaxi.register.getCall(0).args[0], TEST_ACTION1);
-        assert.strictEqual(mockReduxTaxi.register.getCall(1).args[0], TEST_ACTION2);
-        assert.strictEqual(mockReduxTaxi.register.getCall(2).args[0], TEST_ACTION3);
+        expect(register.calledThrice).toBeTruthy();
+        expect(register.firstCall.args[0]).toEqual(TEST_ACTION1);
+        expect(register.secondCall.args[0]).toEqual(TEST_ACTION2);
+        expect(register.thirdCall.args[0]).toEqual(TEST_ACTION3);
     });
 
     it('should not register actions when reduxTaxi context is not available', () => {
@@ -85,6 +85,6 @@ describe('registerAsyncActions', () => {
 
         TestUtils.renderIntoDocument(<TestComponent />);
 
-        assert.strictEqual(mockReduxTaxi.register.callCount, 0);
+        expect(mockReduxTaxi.register.callCount).toEqual(0);
     });
 });
