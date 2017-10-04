@@ -1,4 +1,3 @@
-import {assert} from 'chai';
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import TestUtils from 'react-dom/test-utils';
@@ -51,6 +50,6 @@ describe('ReduxTaxiProvider', () => {
         );
 
         const child = TestUtils.findRenderedComponentWithType(tree, Child);
-        assert.strictEqual(child.context.reduxTaxi, reduxTaxi);
+        expect(child.context.reduxTaxi).toEqual(reduxTaxi);
     });
 });
