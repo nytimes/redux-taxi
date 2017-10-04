@@ -4,7 +4,7 @@ import {ReduxTaxiMiddleware} from '../src/index';
 describe('ReduxTaxiMiddleware', () => {
     const mockReduxTaxi = {
         isRegistered() {},
-        collectPromise() {},
+        collectPromise() {}
     };
     const nextHandler = ReduxTaxiMiddleware(mockReduxTaxi)();
 
@@ -13,11 +13,11 @@ describe('ReduxTaxiMiddleware', () => {
     const testPromise = new Promise(() => {}, () => {});
     const syncAction = {
         type: SYNC_TYPE,
-        payload: {},
+        payload: {}
     };
     const asyncAction = {
         type: ASYNC_TYPE,
-        promise: testPromise,
+        promise: testPromise
     };
 
     it('must return a function to handle next', () => {
