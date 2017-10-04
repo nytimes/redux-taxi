@@ -1,11 +1,10 @@
-import {assert} from 'chai';
-import sinon from 'sinon';
+import sinon, { spy } from 'sinon';
 import {ReduxTaxiMiddleware} from '../src/index';
 
 describe('ReduxTaxiMiddleware', () => {
     const mockReduxTaxi = {
         isRegistered() {},
-        collectPromise() {}
+        collectPromise() {},
     };
     const nextHandler = ReduxTaxiMiddleware(mockReduxTaxi)();
 
@@ -14,59 +13,66 @@ describe('ReduxTaxiMiddleware', () => {
     const testPromise = new Promise(() => {}, () => {});
     const syncAction = {
         type: SYNC_TYPE,
-        payload: {}
+        payload: {},
     };
     const asyncAction = {
         type: ASYNC_TYPE,
-        promise: testPromise
+        promise: testPromise,
     };
 
     it('must return a function to handle next', () => {
-        assert.isFunction(nextHandler);
-        assert.strictEqual(nextHandler.length, 1);
+        expect(nextHandler).toBeInstanceOf(Function);
+        expect(nextHandler).toHaveLength(1);
     });
 
     describe('handle next', () => {
         it('must return a function to handle action', () => {
             const actionHandler = nextHandler();
 
-            assert.isFunction(actionHandler);
-            assert.strictEqual(actionHandler.length, 1);
+            expect(actionHandler).toBeInstanceOf(Function);
+            expect(actionHandler).toHaveLength(1);
         });
 
         describe('handle action', () => {
-            it('must pass actions without promises to the next handler', done => {
-                const actionHandler = nextHandler(action => {
-                    assert.strictEqual(action, syncAction);
-                    done();
-                });
+            it('must pass actions without promises to the next handler', () => {
+                const actionSpy = spy();
+                const actionHandler = nextHandler(actionSpy);
 
                 actionHandler(syncAction);
+                expect(actionSpy.calledOnce).toBeTruthy();
+                expect(actionSpy.firstCall.args[0]).toEqual(syncAction);
             });
 
-            it('must throw an error if the action is not registered', done => {
-                sinon.stub(mockReduxTaxi, 'isRegistered', () => false);
+            it('must throw an error if the action is not registered', () => {
+                const isRegisteredStub = sinon.stub(mockReduxTaxi, 'isRegistered', () => false);
+
                 try {
                     nextHandler()(asyncAction);
                 } catch (err) {
-                    assert.isTrue(err.message.indexOf(ASYNC_TYPE) > -1);
-                    done();
+                    expect(err.message).toEqual(
+                        expect.stringMatching(/ASYNC_TYPE/)
+                    );
                 }
+
+                expect(isRegisteredStub.calledOnce).toBeTruthy();
                 mockReduxTaxi.isRegistered.restore();
             });
 
-            it('must collect promises for registered actions', done => {
+            it('must collect promises for registered actions', () => {
+                const promiseSpy = spy();
+                const actionSpy = spy();
                 sinon.stub(mockReduxTaxi, 'isRegistered', () => true);
-                sinon.stub(mockReduxTaxi, 'collectPromise', (promise) => {
-                    assert.strictEqual(testPromise, promise);
-                    done();
-                });
+                sinon.stub(mockReduxTaxi, 'collectPromise', promiseSpy);
 
-                const actionHandler = nextHandler(action => {
-                    assert.strictEqual(action, asyncAction);
-                });
+                const actionHandler = nextHandler(actionSpy);
 
                 actionHandler(asyncAction);
+
+                expect(promiseSpy.calledOnce).toBeTruthy();
+                expect(promiseSpy.firstCall.args[0]).toEqual(testPromise);
+
+                expect(actionSpy.calledOnce).toBeTruthy();
+                expect(actionSpy.firstCall.args[0]).toEqual(asyncAction);
 
                 mockReduxTaxi.isRegistered.restore();
                 mockReduxTaxi.collectPromise.restore();
