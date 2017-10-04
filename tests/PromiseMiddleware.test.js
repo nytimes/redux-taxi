@@ -1,5 +1,5 @@
 import { spy } from 'sinon';
-import PromiseMiddleware, {START, DONE} from '../src/PromiseMiddleware';
+import PromiseMiddleware, { START, DONE } from '../src/PromiseMiddleware';
 
 describe('PromiseMiddleware', () => {
     const nextHandler = PromiseMiddleware();
@@ -38,7 +38,7 @@ describe('PromiseMiddleware', () => {
 
                 const promiseAction = {
                     type: 'test',
-                    promise: new Promise(promiseResolverFn)
+                    promise: new Promise(promiseResolverFn),
                 };
 
                 it('must produce a START sequenced action', () => {
@@ -65,9 +65,15 @@ describe('PromiseMiddleware', () => {
                     const { sequence: { id: expectedId } } = firstCallArgs;
 
                     expect(actionSpy.calledOnce).toBeTruthy();
-                    expect(firstCallArgs).toHaveProperty('type', promiseAction.type);
+                    expect(firstCallArgs).toHaveProperty(
+                        'type',
+                        promiseAction.type
+                    );
                     expect(firstCallArgs).toHaveProperty('sequence');
-                    expect(firstCallArgs.sequence).toHaveProperty('type', START);
+                    expect(firstCallArgs.sequence).toHaveProperty(
+                        'type',
+                        START
+                    );
 
                     promiseResolver.resolve();
 
@@ -75,8 +81,14 @@ describe('PromiseMiddleware', () => {
                         const secondCallArgs = actionSpy.secondCall.args[0];
 
                         expect(actionSpy.calledTwice).toBeTruthy();
-                        expect(secondCallArgs.sequence).toHaveProperty('id', expectedId);
-                        expect(secondCallArgs.sequence).toHaveProperty('type', DONE);
+                        expect(secondCallArgs.sequence).toHaveProperty(
+                            'id',
+                            expectedId
+                        );
+                        expect(secondCallArgs.sequence).toHaveProperty(
+                            'type',
+                            DONE
+                        );
                     });
                 });
 
@@ -90,9 +102,15 @@ describe('PromiseMiddleware', () => {
                     const { sequence: { id: expectedId } } = firstCallArgs;
 
                     expect(actionSpy.calledOnce).toBeTruthy();
-                    expect(firstCallArgs).toHaveProperty('type', promiseAction.type);
+                    expect(firstCallArgs).toHaveProperty(
+                        'type',
+                        promiseAction.type
+                    );
                     expect(firstCallArgs).toHaveProperty('sequence');
-                    expect(firstCallArgs.sequence).toHaveProperty('type', START);
+                    expect(firstCallArgs.sequence).toHaveProperty(
+                        'type',
+                        START
+                    );
 
                     promiseResolver.reject();
 
@@ -100,21 +118,28 @@ describe('PromiseMiddleware', () => {
                         const secondCallArgs = actionSpy.secondCall.args[0];
 
                         expect(actionSpy.calledTwice).toBeTruthy();
-                        expect(secondCallArgs.sequence).toHaveProperty('id', expectedId);
+                        expect(secondCallArgs.sequence).toHaveProperty(
+                            'id',
+                            expectedId
+                        );
                         expect(secondCallArgs.error).toBeTruthy();
                     });
                 });
 
-                it('must return a rejected promise when the action\'s promise rejects', () => {
+                it("must return a rejected promise when the action's promise rejects", () => {
                     const originalError = 'reason of failure';
                     const promiseActionToReject = {
                         type: 'test',
-                        promise: Promise.reject(originalError)
+                        promise: Promise.reject(originalError),
                     };
                     const actionHandler = nextHandler(() => null);
 
                     return actionHandler(promiseActionToReject)
-                        .then(() => fail('expected promise to be rejected, but was resolved'))
+                        .then(() =>
+                            fail(
+                                'expected promise to be rejected, but was resolved'
+                            )
+                        )
                         .catch(error => {
                             expect(error).toEqual(originalError);
                         });

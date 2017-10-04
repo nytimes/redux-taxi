@@ -1,8 +1,8 @@
 import sinon, { spy } from 'sinon';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TestUtils from 'react-dom/test-utils';
-import {registerAsyncActions} from '../src/index';
+import { registerAsyncActions } from '../src/index';
 
 describe('registerAsyncActions', () => {
     const TEST_ACTION1 = 'TEST_ACTION1';
@@ -10,7 +10,7 @@ describe('registerAsyncActions', () => {
     const TEST_ACTION3 = 'TEST_ACTION3';
 
     const mockReduxTaxi = {
-        register() {}
+        register() {},
     };
 
     class StaticComponent extends Component {
@@ -21,16 +21,16 @@ describe('registerAsyncActions', () => {
 
     class MockReduxTaxiProvider extends Component {
         static propTypes = {
-            children: PropTypes.node.isRequired
+            children: PropTypes.node.isRequired,
         };
 
         static childContextTypes = {
-            reduxTaxi: PropTypes.object
+            reduxTaxi: PropTypes.object,
         };
 
         getChildContext() {
             return {
-                reduxTaxi: mockReduxTaxi
+                reduxTaxi: mockReduxTaxi,
             };
         }
 
