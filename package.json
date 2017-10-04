@@ -6,7 +6,8 @@
   "scripts": {
     "compile": "rm -rf ./lib && babel -d lib/ src/",
     "prepublish": "npm run test && npm run compile",
-    "test": "jest"
+    "test": "jest",
+    "precommit": "lint-staged"
   },
   "repository": "NYTimes/redux-taxi",
   "keywords": [
@@ -41,10 +42,18 @@
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0",
     "babel-register": "^6.7.2",
+    "husky": "^0.14.3",
     "jest": "^21.2.1",
+    "lint-staged": "^4.2.3",
     "prop-types": "^15.5.8",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "sinon": "^1.17.3"
+  },
+  "lint-staged": {
+    "*.js": [
+      "prettier --write --trailing-comma es5 --single-quote --tab-width 4",
+      "git add"
+    ]
   }
 }
