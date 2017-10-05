@@ -6,7 +6,7 @@
     "scripts": {
         "compile": "rm -rf ./lib && babel -d lib/ src/",
         "prepublish": "npm run test && npm run compile",
-        "test": "jest",
+        "test": "jest"
     },
     "repository": "NYTimes/redux-taxi",
     "keywords": [
@@ -45,5 +45,10 @@
         "prop-types": "^15.5.8",
         "react": "^15.5.4",
         "react-dom": "^15.5.4"
+    },
+    "dependencies": {
+        "husky": "^0.14.3",
+        "lint-staged": "^4.2.3",
+        "prettier": "^1.7.4"
     }
 }
