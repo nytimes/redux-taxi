@@ -18,32 +18,47 @@ describe('ReduxTaxiProvider', () => {
     const propTypes = ReduxTaxiProvider.propTypes;
     ReduxTaxiProvider.propTypes = {};
 
-    it.skip('should enforce a single child', () => {
+    it('should not throw an error with a single child', () => {
         try {
-            assert.doesNotThrow(() =>
-                TestUtils.renderIntoDocument(
-                    <ReduxTaxiProvider reduxTaxi={{}}>
-                        <div />
-                    </ReduxTaxiProvider>
+            TestUtils.renderIntoDocument(
+                <ReduxTaxiProvider reduxTaxi={{}}>
+                    <div />
+                </ReduxTaxiProvider>
+            );
+        } catch (err) {
+            fail('Render throw an error.');
+        } finally {
+            ReduxTaxiProvider.propTypes = propTypes;
+        }
+    });
+    it('should thow an error if no child is present.', () => {
+        try {
+            TestUtils.renderIntoDocument(
+                <ReduxTaxiProvider reduxTaxi={{}} children="" />
+            );
+        } catch (err) {
+            expect(err.message).toEqual(
+                expect.stringMatching(
+                    /only expected to receive a single React element child/
                 )
             );
-            assert.throws(
-                () =>
-                    TestUtils.renderIntoDocument(
-                        <ReduxTaxiProvider reduxTaxi={{}} />
-                    ),
-                /exactly one child/
+        } finally {
+            ReduxTaxiProvider.propTypes = propTypes;
+        }
+    });
+    it('should enforce a single child', () => {
+        try {
+            TestUtils.renderIntoDocument(
+                <ReduxTaxiProvider reduxTaxi={{}}>
+                    <div />
+                    <div />
+                </ReduxTaxiProvider>
             );
-
-            assert.throws(
-                () =>
-                    TestUtils.renderIntoDocument(
-                        <ReduxTaxiProvider reduxTaxi={{}}>
-                            <div />
-                            <div />
-                        </ReduxTaxiProvider>
-                    ),
-                /exactly one child/
+        } catch (err) {
+            expect(err.message).toEqual(
+                expect.stringMatching(
+                    /expected to receive a single React element child/
+                )
             );
         } finally {
             ReduxTaxiProvider.propTypes = propTypes;

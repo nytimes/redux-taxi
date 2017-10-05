@@ -1,4 +1,3 @@
-import sinon, { spy } from 'sinon';
 import { ReduxTaxiMiddleware } from '../src/index';
 
 describe('ReduxTaxiMiddleware', () => {
@@ -35,20 +34,16 @@ describe('ReduxTaxiMiddleware', () => {
 
         describe('handle action', () => {
             it('must pass actions without promises to the next handler', () => {
-                const actionSpy = spy();
+                const actionSpy = jest.fn();
                 const actionHandler = nextHandler(actionSpy);
 
                 actionHandler(syncAction);
-                expect(actionSpy.calledOnce).toBeTruthy();
-                expect(actionSpy.firstCall.args[0]).toEqual(syncAction);
+                expect(actionSpy).toHaveBeenCalledTimes(1);
+                expect(actionSpy).toHaveBeenCalledWith(syncAction);
             });
 
             it('must throw an error if the action is not registered', () => {
-                const isRegisteredStub = sinon.stub(
-                    mockReduxTaxi,
-                    'isRegistered',
-                    () => false
-                );
+                mockReduxTaxi.isRegistered = jest.fn(() => false);
 
                 try {
                     nextHandler()(asyncAction);
@@ -58,28 +53,24 @@ describe('ReduxTaxiMiddleware', () => {
                     );
                 }
 
-                expect(isRegisteredStub.calledOnce).toBeTruthy();
-                mockReduxTaxi.isRegistered.restore();
+                expect(mockReduxTaxi.isRegistered).toHaveBeenCalledTimes(1);
             });
 
             it('must collect promises for registered actions', () => {
-                const promiseSpy = spy();
-                const actionSpy = spy();
-                sinon.stub(mockReduxTaxi, 'isRegistered', () => true);
-                sinon.stub(mockReduxTaxi, 'collectPromise', promiseSpy);
+                const promiseSpy = jest.fn();
+                const actionSpy = jest.fn();
+                mockReduxTaxi.isRegistered = jest.fn(() => true);
+                mockReduxTaxi.collectPromise = promiseSpy;
 
                 const actionHandler = nextHandler(actionSpy);
 
                 actionHandler(asyncAction);
 
-                expect(promiseSpy.calledOnce).toBeTruthy();
-                expect(promiseSpy.firstCall.args[0]).toEqual(testPromise);
+                expect(promiseSpy).toHaveBeenCalledTimes(1);
+                expect(promiseSpy).toHaveBeenCalledWith(testPromise);
 
-                expect(actionSpy.calledOnce).toBeTruthy();
-                expect(actionSpy.firstCall.args[0]).toEqual(asyncAction);
-
-                mockReduxTaxi.isRegistered.restore();
-                mockReduxTaxi.collectPromise.restore();
+                expect(actionSpy).toHaveBeenCalledTimes(1);
+                expect(actionSpy).toHaveBeenCalledWith(asyncAction);
             });
         }); // end describe('handle action')
     }); // end describe('handle next')

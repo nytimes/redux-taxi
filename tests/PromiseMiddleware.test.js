@@ -1,4 +1,3 @@
-import { spy } from 'sinon';
 import PromiseMiddleware, { START, DONE } from '../src/PromiseMiddleware';
 
 describe('PromiseMiddleware', () => {
@@ -20,13 +19,13 @@ describe('PromiseMiddleware', () => {
         describe('handle action', () => {
             it('must pass actions without promises to the next handler', () => {
                 const actionObj = {};
-                const actionSpy = spy();
+                const actionSpy = jest.fn();
                 const actionHandler = nextHandler(actionSpy);
 
                 actionHandler(actionObj);
 
-                expect(actionSpy.calledOnce).toBeTruthy();
-                expect(actionSpy.firstCall.args[0]).toEqual(actionObj);
+                expect(actionSpy).toHaveBeenCalledTimes(1);
+                expect(actionSpy).toHaveBeenCalledWith(actionObj);
             });
 
             describe('handle promise action', () => {
@@ -42,29 +41,29 @@ describe('PromiseMiddleware', () => {
                 };
 
                 it('must produce a START sequenced action', () => {
-                    const actionSpy = spy();
+                    const actionSpy = jest.fn();
                     const actionHandler = nextHandler(actionSpy);
 
                     actionHandler(promiseAction);
 
-                    const { sequence, type } = actionSpy.firstCall.args[0];
+                    const { sequence, type } = actionSpy.mock.calls[0][0];
 
-                    expect(actionSpy.calledOnce).toBeTruthy();
+                    expect(actionSpy).toHaveBeenCalledTimes(1);
                     expect(sequence).toBeDefined();
                     expect(type).toEqual(promiseAction.type);
                     expect(sequence.type).toEqual(START);
                 });
 
                 it('must produce a DONE sequenced action when the promise resolves', () => {
-                    const actionSpy = spy();
+                    const actionSpy = jest.fn();
                     const actionHandler = nextHandler(actionSpy);
 
                     const promiseResult = actionHandler(promiseAction);
 
-                    const firstCallArgs = actionSpy.firstCall.args[0];
+                    const firstCallArgs = actionSpy.mock.calls[0][0];
                     const { sequence: { id: expectedId } } = firstCallArgs;
 
-                    expect(actionSpy.calledOnce).toBeTruthy();
+                    expect(actionSpy).toHaveBeenCalledTimes(1);
                     expect(firstCallArgs).toHaveProperty(
                         'type',
                         promiseAction.type
@@ -78,9 +77,9 @@ describe('PromiseMiddleware', () => {
                     promiseResolver.resolve();
 
                     return promiseResult.then(() => {
-                        const secondCallArgs = actionSpy.secondCall.args[0];
+                        const secondCallArgs = actionSpy.mock.calls[1][0];
 
-                        expect(actionSpy.calledTwice).toBeTruthy();
+                        expect(actionSpy).toHaveBeenCalledTimes(2);
                         expect(secondCallArgs.sequence).toHaveProperty(
                             'id',
                             expectedId
@@ -93,15 +92,15 @@ describe('PromiseMiddleware', () => {
                 });
 
                 it('must produce an ERROR action when the promise rejects', () => {
-                    const actionSpy = spy();
+                    const actionSpy = jest.fn();
                     const actionHandler = nextHandler(actionSpy);
 
                     const promiseResult = actionHandler(promiseAction);
 
-                    const firstCallArgs = actionSpy.firstCall.args[0];
+                    const firstCallArgs = actionSpy.mock.calls[0][0];
                     const { sequence: { id: expectedId } } = firstCallArgs;
 
-                    expect(actionSpy.calledOnce).toBeTruthy();
+                    expect(actionSpy).toHaveBeenCalledTimes(1);
                     expect(firstCallArgs).toHaveProperty(
                         'type',
                         promiseAction.type
@@ -115,9 +114,9 @@ describe('PromiseMiddleware', () => {
                     promiseResolver.reject();
 
                     return promiseResult.catch(() => {
-                        const secondCallArgs = actionSpy.secondCall.args[0];
+                        const secondCallArgs = actionSpy.mock.calls[1][0];
 
-                        expect(actionSpy.calledTwice).toBeTruthy();
+                        expect(actionSpy).toHaveBeenCalledTimes(2);
                         expect(secondCallArgs.sequence).toHaveProperty(
                             'id',
                             expectedId
