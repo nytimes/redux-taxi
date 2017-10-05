@@ -16,18 +16,18 @@
 *
 **/
 export default function ReduxTaxiMiddleware(reduxTaxi) {
-    return () => next => action => {
-        const { promise, type } = action;
+  return () => next => action => {
+    const { promise, type } = action;
 
-        if (!promise) {
-            return next(action);
-        }
+    if (!promise) {
+      return next(action);
+    }
 
-        if (reduxTaxi.isRegistered(type)) {
-            reduxTaxi.collectPromise(promise);
-        } else {
-            throw new Error(
-                `The async action ${type} was dispatched in a server context without being explicitly registered.
+    if (reduxTaxi.isRegistered(type)) {
+      reduxTaxi.collectPromise(promise);
+    } else {
+      throw new Error(
+        `The async action ${type} was dispatched in a server context without being explicitly registered.
 
 This usually means an asynchronous action (an action that contains a Promise) was dispatched in a component's instantiation.
 
@@ -37,9 +37,9 @@ If you DO want to delay the pageload rendering and wait for the action to resolv
     Like so:
     @registerAsyncActions(${type})
 `
-            );
-        }
+      );
+    }
 
-        return next(action);
-    };
+    return next(action);
+  };
 }
