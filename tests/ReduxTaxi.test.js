@@ -1,60 +1,60 @@
-import {assert} from 'chai';
-import {ReduxTaxi} from '../src/index';
+import { ReduxTaxi } from '../src/index';
 
 describe('ReduxTaxi', () => {
-    const actionType1 = 'test1';
-    const actionType2 = 'test2';
+  const actionType1 = 'test1';
+  const actionType2 = 'test2';
+  let reduxTaxi;
+
+  beforeEach(() => {
+    reduxTaxi = ReduxTaxi();
+  });
+
+  it('should correctly register an action', () => {
+    expect(reduxTaxi.getRegisteredActions().size).toEqual(0);
+    expect(reduxTaxi.isRegistered(actionType1)).toBeFalsy();
+    expect(reduxTaxi.isRegistered(actionType2)).toBeFalsy();
+
+    reduxTaxi.register(actionType1);
+    expect(reduxTaxi.getRegisteredActions().size).toEqual(1);
+    expect(reduxTaxi.isRegistered(actionType1)).toBeTruthy();
+
+    reduxTaxi.register(actionType2);
+    expect(reduxTaxi.getRegisteredActions().size).toEqual(2);
+    expect(reduxTaxi.isRegistered(actionType2)).toBeTruthy();
+  });
+
+  it('should only register the same action type once', () => {
+    expect(reduxTaxi.isRegistered(actionType1)).toBeFalsy();
+
+    reduxTaxi.register(actionType1);
+    reduxTaxi.register(actionType1);
+
+    expect(reduxTaxi.isRegistered(actionType1)).toBeTruthy();
+    expect(reduxTaxi.getRegisteredActions().size).toEqual(1);
+  });
+
+  it('should return false for an unregistered action', () => {
+    expect(reduxTaxi.isRegistered(actionType1)).toBeFalsy();
+  });
+
+  it('should return true for a registered action', () => {
+    reduxTaxi.register(actionType1);
+    expect(reduxTaxi.isRegistered(actionType1)).toBeTruthy();
+  });
+
+  it('should be able to collect promises', () => {
     const promise = new Promise(() => {}, () => {});
-    let reduxTaxi;
 
-    beforeEach(() => {
-        reduxTaxi = ReduxTaxi();
-    });
+    expect(reduxTaxi.getAllPromises()).toBeInstanceOf(Array);
+    expect(reduxTaxi.getAllPromises()).toHaveLength(0);
 
-    it('should correctly register an action', () => {
-        assert.strictEqual(reduxTaxi.getRegisteredActions().size, 0);
-        assert.isFalse(reduxTaxi.isRegistered(actionType1));
-        assert.isFalse(reduxTaxi.isRegistered(actionType2));
+    reduxTaxi.collectPromise(promise);
+    expect(reduxTaxi.getAllPromises()).toHaveLength(1);
 
-        reduxTaxi.register(actionType1);
-        assert.strictEqual(reduxTaxi.getRegisteredActions().size, 1);
-        assert.isTrue(reduxTaxi.isRegistered(actionType1));
+    reduxTaxi.collectPromise(promise);
+    expect(reduxTaxi.getAllPromises()).toHaveLength(2);
 
-        reduxTaxi.register(actionType2);
-        assert.strictEqual(reduxTaxi.getRegisteredActions().size, 2);
-        assert.isTrue(reduxTaxi.isRegistered(actionType2));
-    });
-
-    it('should only register the same action type once', () => {
-        assert.isFalse(reduxTaxi.isRegistered(actionType1));
-
-        reduxTaxi.register(actionType1);
-        reduxTaxi.register(actionType1);
-
-        assert.strictEqual(reduxTaxi.getRegisteredActions().size, 1);
-        assert.isTrue(reduxTaxi.isRegistered(actionType1));
-    });
-
-    it('should return false for an unregistered action', () => {
-        assert.isFalse(reduxTaxi.isRegistered(actionType1));
-    });
-
-    it('should return true for a registered action', () => {
-        reduxTaxi.register(actionType1);
-        assert.isTrue(reduxTaxi.isRegistered(actionType1));
-    });
-
-    it('should be able to collect promises', () => {
-        assert.isArray(reduxTaxi.getAllPromises());
-        assert.strictEqual(reduxTaxi.getAllPromises().length, 0);
-
-        reduxTaxi.collectPromise(promise);
-        assert.strictEqual(reduxTaxi.getAllPromises().length, 1);
-
-        reduxTaxi.collectPromise(promise);
-        assert.strictEqual(reduxTaxi.getAllPromises().length, 2);
-
-        reduxTaxi.collectPromise(promise);
-        assert.strictEqual(reduxTaxi.getAllPromises().length, 3);
-    });
+    reduxTaxi.collectPromise(promise);
+    expect(reduxTaxi.getAllPromises()).toHaveLength(3);
+  });
 });

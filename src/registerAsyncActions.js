@@ -11,25 +11,23 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export default function registerAsyncActions(...actionTypes) {
-    return DecoratedComponent =>
+  return DecoratedComponent =>
     class AsyncDecorator extends React.Component {
-        static contextTypes = {
-            reduxTaxi: PropTypes.object // not required because we don't define it for client context
-        };
+      static contextTypes = {
+        reduxTaxi: PropTypes.object, // not required because we don't define it for client context
+      };
 
-        constructor(props, context) {
-            super(props, context);
-            if (context.reduxTaxi) {
-                actionTypes.forEach(actionType => {
-                    context.reduxTaxi.register(actionType);
-                });
-            }
+      constructor(props, context) {
+        super(props, context);
+        if (context.reduxTaxi) {
+          actionTypes.forEach(actionType => {
+            context.reduxTaxi.register(actionType);
+          });
         }
+      }
 
-        render() {
-            return (
-                <DecoratedComponent {...this.props} />
-            );
-        }
+      render() {
+        return <DecoratedComponent {...this.props} />;
+      }
     };
 }
