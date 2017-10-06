@@ -1,4 +1,4 @@
 language: node_js
 node_js:
   - 6
-script: npm i && npm run lint && npm test
+script: yarn && yarn run lint && yarn test
