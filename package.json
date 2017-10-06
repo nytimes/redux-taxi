@@ -1,12 +1,17 @@
 {
   "name": "redux-taxi",
   "version": "1.2.0",
-  "description": "Inform server-side rendering from the component level when dealing with asynchronous actions.",
+  "description":
+    "Inform server-side rendering from the component level when dealing with asynchronous actions.",
   "main": "lib/index",
   "scripts": {
     "compile": "rm -rf ./lib && babel -d lib/ src/",
     "prepublish": "npm run test && npm run compile",
-    "test": "jest"
+    "test": "jest",
+    "precommit": "lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,json,css}": ["prettier --write", "git add"]
   },
   "repository": "NYTimes/redux-taxi",
   "keywords": [
@@ -47,5 +52,10 @@
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "sinon": "^1.17.3"
+  },
+  "dependencies": {
+    "husky": "^0.14.3",
+    "lint-staged": "^4.2.3",
+    "prettier": "^1.7.4"
   }
 }
