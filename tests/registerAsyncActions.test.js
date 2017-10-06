@@ -1,9 +1,7 @@
-import {assert} from 'chai';
-import sinon from 'sinon';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import TestUtils from 'react-dom/test-utils';
-import {registerAsyncActions} from '../src/index';
+import { registerAsyncActions } from '../src/index';
 
 describe('registerAsyncActions', () => {
     const TEST_ACTION1 = 'TEST_ACTION1';
@@ -11,7 +9,7 @@ describe('registerAsyncActions', () => {
     const TEST_ACTION3 = 'TEST_ACTION3';
 
     const mockReduxTaxi = {
-        register() {}
+        register() {},
     };
 
     class StaticComponent extends Component {
@@ -22,16 +20,16 @@ describe('registerAsyncActions', () => {
 
     class MockReduxTaxiProvider extends Component {
         static propTypes = {
-            children: PropTypes.node.isRequired
+            children: PropTypes.node.isRequired,
         };
 
         static childContextTypes = {
-            reduxTaxi: PropTypes.object
+            reduxTaxi: PropTypes.object,
         };
 
         getChildContext() {
             return {
-                reduxTaxi: mockReduxTaxi
+                reduxTaxi: mockReduxTaxi,
             };
         }
 
@@ -41,11 +39,7 @@ describe('registerAsyncActions', () => {
     }
 
     beforeEach(() => {
-        sinon.spy(mockReduxTaxi, 'register');
-    });
-
-    afterEach(() => {
-        mockReduxTaxi.register.restore();
+        mockReduxTaxi.register = jest.fn();
     });
 
     it('should register a single action passed in', () => {
@@ -58,8 +52,8 @@ describe('registerAsyncActions', () => {
             </MockReduxTaxiProvider>
         );
 
-        assert.isTrue(mockReduxTaxi.register.calledOnce);
-        assert(mockReduxTaxi.register.calledWith(TEST_ACTION1));
+        expect(mockReduxTaxi.register).toHaveBeenCalledTimes(1);
+        expect(mockReduxTaxi.register).toHaveBeenCalledWith(TEST_ACTION1);
     });
 
     it('should register a list of actions passed in', () => {
@@ -72,11 +66,12 @@ describe('registerAsyncActions', () => {
             </MockReduxTaxiProvider>
         );
 
-        assert.isTrue(mockReduxTaxi.register.calledThrice);
+        const { register } = mockReduxTaxi;
 
-        assert.strictEqual(mockReduxTaxi.register.getCall(0).args[0], TEST_ACTION1);
-        assert.strictEqual(mockReduxTaxi.register.getCall(1).args[0], TEST_ACTION2);
-        assert.strictEqual(mockReduxTaxi.register.getCall(2).args[0], TEST_ACTION3);
+        expect(register).toHaveBeenCalledTimes(3);
+        expect(register.mock.calls[0][0]).toEqual(TEST_ACTION1);
+        expect(register.mock.calls[1][0]).toEqual(TEST_ACTION2);
+        expect(register.mock.calls[2][0]).toEqual(TEST_ACTION3);
     });
 
     it('should not register actions when reduxTaxi context is not available', () => {
@@ -85,6 +80,6 @@ describe('registerAsyncActions', () => {
 
         TestUtils.renderIntoDocument(<TestComponent />);
 
-        assert.strictEqual(mockReduxTaxi.register.callCount, 0);
+        expect(mockReduxTaxi.register).toHaveBeenCalledTimes(0);
     });
 });

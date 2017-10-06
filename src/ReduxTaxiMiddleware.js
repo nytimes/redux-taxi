@@ -17,7 +17,7 @@
 **/
 export default function ReduxTaxiMiddleware(reduxTaxi) {
     return () => next => action => {
-        const {promise, type} = action;
+        const { promise, type } = action;
 
         if (!promise) {
             return next(action);
@@ -27,7 +27,7 @@ export default function ReduxTaxiMiddleware(reduxTaxi) {
             reduxTaxi.collectPromise(promise);
         } else {
             throw new Error(
-`The async action ${type} was dispatched in a server context without being explicitly registered.
+                `The async action ${type} was dispatched in a server context without being explicitly registered.
 
 This usually means an asynchronous action (an action that contains a Promise) was dispatched in a component's instantiation.
 

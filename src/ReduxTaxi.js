@@ -28,6 +28,6 @@ export default function ReduxTaxi() {
 
         getAllPromises() {
             return promises;
-        }
+        },
     };
 }
