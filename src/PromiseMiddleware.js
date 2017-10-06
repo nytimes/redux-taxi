@@ -16,45 +16,44 @@ export const START = 'START';
 export const DONE = 'DONE';
 
 function generateRandomId() {
-    return Math.random()
-        .toString(36)
-        .slice(-5);
+  return Math.random()
+    .toString(36)
+    .slice(-5);
 }
 
 function sequence(id, type) {
-    return {
-        sequence: { id, type },
-    };
+  return {
+    sequence: { id, type },
+  };
 }
 
 export default function PromiseMiddleware() {
-    return next => action => {
-        const { promise, ...rest } = action;
-        const id = generateRandomId();
+  return next => action => {
+    const { promise, ...rest } = action;
+    const id = generateRandomId();
 
-        if (!promise) {
-            return next(action);
+    if (!promise) {
+      return next(action);
+    }
+
+    next({ ...rest, ...sequence(id, START) });
+    return promise.then(
+      payload => next({ ...rest, payload, ...sequence(id, DONE) }),
+      reason => {
+        let error = reason;
+        // By FSA definition, payload SHOULD be an error object
+        // Promises in turn don't require reason to be an Error
+        if (!(error instanceof Error)) {
+          let message = reason;
+          if (typeof message !== 'string') {
+            message = 'Promise rejected with data. See error.data field.';
+          }
+          error = new Error(message);
+          error.data = reason;
         }
-
-        next({ ...rest, ...sequence(id, START) });
-        return promise.then(
-            payload => next({ ...rest, payload, ...sequence(id, DONE) }),
-            reason => {
-                let error = reason;
-                // By FSA definition, payload SHOULD be an error object
-                // Promises in turn don't require reason to be an Error
-                if (!(error instanceof Error)) {
-                    let message = reason;
-                    if (typeof message !== 'string') {
-                        message =
-                            'Promise rejected with data. See error.data field.';
-                    }
-                    error = new Error(message);
-                    error.data = reason;
-                }
-                next({ ...rest, payload: error, error: true, ...sequence(id) });
-                return Promise.reject(reason); // Don't break the promise chain
-            }
-        );
-    };
+        next({ ...rest, payload: error, error: true, ...sequence(id) });
+        return Promise.reject(reason); // Don't break the promise chain
+      }
+    );
+  };
 }
